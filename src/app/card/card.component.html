@@ -1,9 +1,9 @@
-<div class="h-screen w-screen p-8 bg-gray-100">
+<div class="w-screen p-8 bg-black-100">
   <div class="bg-white flex p-10 justify-center rounded-2xl shadow-xl height">
     <div class="w-1/2 border-r-2 pr-8">
-      <h2 class="text-xl font-bold">Maserati Quattroporte</h2>
+      <img src="assets/maserati/QP_logo-black.svg" alt="Maserati Quattroporte" class="w-1/2"/>
       <p class="text-sm text-gray-400">Prezzo Base: {{prezzo | currency}}</p>
-      <p class="my-5 text-gray-500 text-sm">La Maserati Quattroporte è una grande berlina prodotta dalla casa automobilistica italiana Maserati a partire dal 1963. Giunta alla sesta generazione è diventata una delle auto al top della gamma Maserati e al tempo stesso è tra le più lussuose autovetture attualmente in produzione.</p>
+      <p class="my-4 text-gray-500 text-sm">Linee eleganti e proporzioni ben bilanciate definiscono la compostezza classica di Quattroporte. Il suo aspetto evocativo incontra un’aerodinamica rivoluzionaria per offrire una potente sensazione di esclusività.Anche l’abitacolo riserva una qualità di altissimo livello. Quattroporte rifiuta gli eccessi, ma questo non le impedisce di offrire materiali esclusivi e funzionalità superiori.</p>
       <h3 class="text-sm text-gray-400 tracking-widest">COLOR OPTIONS</h3>
       <div class="flex mt-4 gap-4">
         <button class="h-10 w-10 rounded-full shadow-lg cursor-pointer hover:opacity-50 border-2 border-white" [ngClass]="{ 'selected': selectedColor === color }" [style.background-color]="color" *ngFor="let color of colors" (click)="selectedColor = color"></button>

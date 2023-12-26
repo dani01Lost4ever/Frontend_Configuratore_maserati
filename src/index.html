@@ -2,55 +2,66 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>MAserati Configurator</title>
+  <title>Maserati Configurator</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/x-icon" href="assets/maserati/icons8-maserati-96.svg">
   <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/css/Cabin.css">
   <link rel="stylesheet" href="assets/css/Lora.css">
   <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
+  <link rel="stylesheet" href="index.scss">
 </head>
 <body id="page-top" data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="77">
-<nav class="navbar navbar-expand-md fixed-top navbar-light" id="mainNav">
-  <div class="container"><a class="navbar-brand" href="#">MASERATI</a><button data-bs-toggle="collapse" class="navbar-toggler navbar-toggler-right" data-bs-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" value="Menu"><i class="fa fa-bars"></i></button>
+<nav class="navbar navbar-expand-md fixed-top light" id="mainNav">
+  <div class="container"><a class="navbar-brand" href="#" style="display: flex; flex-direction: row; align-items: center;"><img src="assets/maserati/icons8-maserati-48.svg" alt="Brand logo" class="brand-icon">MASERATI</a><button data-bs-toggle="collapse" class="navbar-toggler navbar-toggler-right" data-bs-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" value="Menu"><i class="fa fa-bars"></i></button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item nav-link"><a class="nav-link active" href="#about">About</a></li>
-        <li class="nav-item nav-link"><a class="nav-link" href="#download">configurator</a></li>
+        <li class="nav-item nav-link"><a class="nav-link" href="#conf">configurator</a></li>
         <li class="nav-item nav-link"><a class="nav-link" href="#contact">contact</a></li>
       </ul>
     </div>
   </div>
 </nav>
-<header class="masthead" style="background-image:url('assets/img/intro-bg.jpg');">
+
+
+<header class="masthead" style="background-color: transparent !important;">
+  <!--  style="background-image:url('assets/img/intro-bg.jpg');"-->
+  <div class="overlay"></div>
+  <video  playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop" style="z-index: -100 !important; position: absolute !important; width: 100% !important;">
+    <source src="assets/videos/headervideo.mp4" type="video/mp4">
+  </video>
   <div class="intro-body">
     <div class="container">
       <div class="row">
         <div class="col-lg-8 mx-auto">
           <h1 class="brand-heading">Maserati Quattroporte</h1>
-          <p class="intro-text">Dal 1963, la berlina sportiva di lusso originale.<br>Una leggenda che non smette mai di ispirare</p><a class="btn btn-link btn-circle" role="button" href="#about"><i class="fa fa-angle-double-down animated"></i></a>
+<!--          <p class="intro-text">Dal 1963, la berlina sportiva di lusso originale.<br>Una leggenda che non smette mai di ispirare</p>-->
+          <a class="btn btn-link btn-circle" role="button" href="#conf"><i class="fa fa-angle-double-down animated"></i></a>
         </div>
       </div>
     </div>
   </div>
 </header>
 
-<section class="text-center content-section" id="about">
+
+
+<section class="content-section" id="conf" style="padding-bottom: 70px !important;">
   <app-root></app-root>
 </section>
-<section class="text-center download-section content-section" id="download" style="background-image:url('assets/img/downloads-bg.jpg');">
+<section class="text-center download-section content-section" id="download" style="background-image:url('assets/banner2.jpg');">
   <div class="container">
     <div class="col-lg-8 mx-auto">
-      <h1>Download Grayscale</h1>
-      <p>You can download Grayscale for free on the preview page.</p><button class="btn btn-primary btn-lg btn-default" type="button">visit download page</button>
+      <h1>Discover Maserati World.</h1>
+      <p>Visit our site and keep you updated.</p><button class="btn btn-primary btn-lg btn-default" type="button">MASERATI</button>
     </div>
   </div>
 </section><!-- Start: Map Clean -->
 <div class="map-clean"></div><!-- End: Map Clean -->
 <footer>
   <div class="container text-center">
-    <p>Copyright ©&nbsp;Brand 2023</p>
+    <p>Copyright ©&nbsp;Maserati 2023</p>
   </div>
 </footer>
 <script src="assets/js/grayscale.js"></script>
