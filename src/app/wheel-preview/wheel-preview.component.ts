@@ -19,6 +19,7 @@ export class WheelPreviewComponent  implements OnInit{
     map(items => items.filter(item => item.ModelloIDmongo.Nome === 'Quattroporte')),
     map(items => items.filter(item => item.CategoriaOptionalIDmongo.CategoriaOptionalID === '2')),
   )
+  selectedRim: string = '';
   rims: OptionalEntity[] = [  ];
   ngOnInit() {
     this.rims$.subscribe(rims => {
@@ -30,5 +31,6 @@ export class WheelPreviewComponent  implements OnInit{
 
   selectRim(rimImage: string) {
     this.rimSelected.emit(rimImage);
+    this.selectedRim = rimImage;
   }
 }

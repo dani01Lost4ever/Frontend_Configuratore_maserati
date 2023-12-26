@@ -72,8 +72,8 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
     orbitControls.autoRotateSpeed = 2;
     const camera = orbitControls.object as PerspectiveCamera;
     camera.fov = 100;
-    camera.zoom = 4.5;
-    camera.position.setY(4);
+    camera.zoom = 3.0;
+    camera.position.setY(2);
   }
 
   applyColorToMaterial(color: string) {

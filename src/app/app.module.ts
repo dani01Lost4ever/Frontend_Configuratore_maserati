@@ -11,12 +11,14 @@ import { AppComponent } from './app.component';
 import { CarConfiguratorComponent } from './car-configurator/car-configurator.component';
 import { WheelPreviewComponent } from './wheel-preview/wheel-preview.component';
 import {HttpClientModule} from "@angular/common/http";
+import { CardComponent } from './card/card.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CarConfiguratorComponent,
-    WheelPreviewComponent
+    WheelPreviewComponent,
+    CardComponent
   ],
   imports: [
     BrowserModule,
