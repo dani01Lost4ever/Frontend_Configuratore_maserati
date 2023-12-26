@@ -8,6 +8,7 @@ import {DbConnectionsService} from "../service/db-connections.service";
 })
 export class CardComponent implements OnInit{
   colors: string[] = [  ];
+  brakeKalipers: string[] = [  ];
   prezzo: number = 0;
   constructor(private DbConnectionsService: DbConnectionsService) {  }
   paints$: Observable<string[]> = this.DbConnectionsService.list().pipe(
@@ -18,6 +19,12 @@ export class CardComponent implements OnInit{
   price$: Observable<number[]> = this.DbConnectionsService.listModelli().pipe(
     map(items => items.filter(item => item.Nome === 'Quattroporte')),
     map(items => items.map(item => item.PrezzoBase))
+  );
+
+  brakeKalipers$: Observable<string[]> = this.DbConnectionsService.list().pipe(
+    map(items => items.filter(item => item.ModelloIDmongo.Nome === 'Quattroporte')),
+    map(items => items.filter(item => item.CategoriaOptionalIDmongo.CategoriaOptionalID === '3')),
+    map(items => items.map(item => item.FileImage)) // Assuming FileImage is the color
   );
 
   ngOnInit() {
@@ -38,9 +45,35 @@ export class CardComponent implements OnInit{
         }
       });
     });
+
+    this.brakeKalipers$.subscribe(colors => {
+      this.brakeKalipers = colors.map(colorName => {
+        switch (colorName.toLowerCase()) {
+          case 'pinze_argento.png':
+            return '#c0c0c0';
+          case 'pinze_blu_opaco_anodizzato.png':
+            return '#3e5f8a';
+          case 'pinze_blu.png':
+            return '#0000ff';
+          case 'pinze_gialle.png':
+            return '#FFFF00';
+          case 'pinze_nere.png':
+            return '#1c1c1c';
+          case 'pinze_rosse.png':
+            return '#ff0000';
+          case 'pinze_titanio.png':
+            return '#6a696f';
+          case 'pinze_rosso_opaco_anodizzato.png':
+            return '#a12312';
+          default:
+            return '#000000';
+        }
+      });
+    });
   }
 
   selectedColor = this.colors[0];
+  selectedBrakeCaliper = this.brakeKalipers[0];
   selectedRim: string = '';
 
   onRimSelected(rimImage: string) {

@@ -1,23 +1,30 @@
-<ngt-canvas [shadows]="true" [scene]="{ background: 'white' | color }">
+<ngt-canvas [shadows]="true" [scene]="{ background: 'white' | color }" >
   <ngt-ambient-light [intensity]="0.5"></ngt-ambient-light>
   <ngt-point-light
-    [intensity]="0.8"
-    [position]="[1, 1, 0]"
+    [intensity]="4"
+    [position]="[4, 4, 1]"
   ></ngt-point-light>
   <ngt-point-light
-    [intensity]="0.8"
-    [position]="[-1, 1, 0]"
+    [intensity]="4"
+    [position]="[-4, 4, 5]"
   ></ngt-point-light>
   <ngt-point-light
-    [intensity]="0.8"
-    [position]="[1, -1, 0]"
+    [intensity]="4"
+    [position]="[2, -2, 0]"
   ></ngt-point-light>
+
   <ngt-primitive
     *ngIf="car$ | async as cup"
     [object]="cup.scene"
+    [castShadow]="true"
     (ready)="carLoaded($event)"
   >
   </ngt-primitive>
+<!--  <ngt-mesh [position]="[0, -0.1, 0]" [rotation]="[-Math.PI / 2, 0, 0]" [receiveShadow]="true">-->
+<!--    <ngt-plane-geometry [args]="[10, 10]"></ngt-plane-geometry>-->
+<!--    <ngt-mesh-standard-material [parameters]="{color: 'silver'}"></ngt-mesh-standard-material>-->
+<!--  </ngt-mesh>-->
+
   <ngt-soba-orbit-controls
     #controls="ngtSobaOrbitControls"
     [target]="[0, 0.5, 0]"

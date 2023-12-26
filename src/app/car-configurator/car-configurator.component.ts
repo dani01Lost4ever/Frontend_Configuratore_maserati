@@ -1,15 +1,16 @@
 import {NgtSobaOrbitControls} from '@angular-three/soba/controls';
 import {NgtGLTFLoaderService} from '@angular-three/soba/loaders';
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import * as THREE from 'three';
-import {Group, Mesh, MeshPhysicalMaterial, MeshStandardMaterial, Object3D, PerspectiveCamera} from 'three';
+import {DoubleSide, Group, Mesh, MeshPhysicalMaterial, MeshStandardMaterial, Object3D, PerspectiveCamera} from 'three';
+import {NgtCanvas} from "@angular-three/core";
 
 @Component({
   selector: 'app-car-configurator',
   templateUrl: './car-configurator.component.html',
   styleUrls: ['./car-configurator.component.scss']
 })
-export class CarConfiguratorComponent implements OnInit, OnChanges {
+export class CarConfiguratorComponent implements OnInit, OnChanges  {
   // private originalWheelsFront!: Object3D | undefined
   // private originalWheelsRear!: Object3D | undefined;
   @Input()
@@ -17,10 +18,15 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
     this.#color = value;
     this.applyColorToMaterial(value);
   }
+  @Input() set brakeKaliper(value: string) {
+    this.#caliper = value;
+    this.applyColorToCaliper(value);
+  }
   @Input() rim: string = '';
+
   private carModel: Object3D | null = null; // This will store the car model scene
   #color = '';
-
+  #caliper='';
   cupMaterial: MeshPhysicalMaterial | undefined;
 
   constructor(private gltfLoaderService: NgtGLTFLoaderService) {}
@@ -28,13 +34,21 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
   // alternateWheels$ = this.gltfLoaderService.load('assets/newRims.glb');
   // private alternateWheels: Object3D | undefined;
   car$ = this.gltfLoaderService.load('assets/maserati_quattroporte.glb');
-
   carLoaded(object: Object3D) {
+
+    //logging*************************************
+    const box = new THREE.Box3().setFromObject(object);
+    console.log('Position:', object.position);
+    console.log('Scale:', object.scale);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    console.log('Size of the car:', size);
+    //logging*************************************
     this.carModel = object; // Store the main car model
     console.log("model loaded: "+object);
     const traverseAndListMaterials = (obj: Object3D) => {
       if (obj instanceof Mesh && obj.material) {
-        console.log('Material found in:', obj.name, obj.material);
+        //console.log('Material found in:', obj.name, obj.material);
       }
       obj.children.forEach(child => traverseAndListMaterials(child));
     };
@@ -42,7 +56,7 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
 
     object.traverse((node) => {
       if (node.name) {
-        console.log('Node found:', node.name, node);
+        //console.log('Node found:', node.name, node);
       }
     });
     // this.originalWheelsFront = object.getObjectByName('GEO_rimLR_SUB0_EXT_rim3_0');
@@ -84,11 +98,39 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
       this.cupMaterial.color.setHex(parseInt(color.substring(1), 16));
       // Optionally, you might want to adjust the emissive color to a low intensity or black (if you don't want any glow effect)
       this.cupMaterial.emissive.setHex(parseInt(color.substring(1), 16)); // or a very dark shade of the base color
-      this.cupMaterial.emissiveIntensity = 0.2; // A small value to add depth, if necessary
-      this.cupMaterial.metalness = 0.5; // values range from 0.0 (non-metallic) to 1.0 (metallic)
-      this.cupMaterial.roughness = 0.2; // values range from 0.0 (smooth) to 1.0 (rough)
+      this.cupMaterial.emissiveIntensity = 0.1; // A small value to add depth, if necessary
+      this.cupMaterial.metalness = 1.0; // values range from 0.0 (non-metallic) to 1.0 (metallic)
+      this.cupMaterial.roughness = 0.1; // values range from 0.0 (smooth) to 1.0 (rough)
       this.cupMaterial.needsUpdate = true;
     }
+  }
+
+  applyColorToCaliper(color: string) {
+    //create an array to store the objects
+    var objects = [];
+    //i need to retrieve the right object inside carModel
+    const caliperMeshLF = this.carModel!.getObjectByName('GEO_caliperLF_2_EXT_caliper_0');
+    objects.push(caliperMeshLF);
+    const caliperMeshLR = this.carModel!.getObjectByName('GEO_caliperLR_2_EXT_caliper.1_0');
+    objects.push(caliperMeshLR);
+    const caliperMeshRF = this.carModel!.getObjectByName('GEO_caliperRF_2_EXT_caliper.2_0');
+    objects.push(caliperMeshRF);
+    const caliperMeshRR = this.carModel!.getObjectByName('GEO_caliperRR_2_EXT_caliper.3_0');
+    objects.push(caliperMeshRR);
+    console.log("material: "+objects);
+    objects.forEach(caliperMesh => {
+      if (caliperMesh instanceof Mesh) {
+        const caliperMaterial = caliperMesh.material as MeshPhysicalMaterial;
+        // Adjust the base color of the material
+        caliperMaterial.color.setHex(parseInt(color.substring(1), 16));
+        // Optionally, you might want to adjust the emissive color to a low intensity or black (if you don't want any glow effect)
+        caliperMaterial.emissive.setHex(parseInt(color.substring(1), 16)); // or a very dark shade of the base color
+        caliperMaterial.emissiveIntensity = 0.1; // A small value to add depth, if necessary
+        caliperMaterial.metalness = 1.0; // values range from 0.0 (non-metallic) to 1.0 (metallic)
+        caliperMaterial.roughness = 0.1; // values range from 0.0 (smooth) to 1.0 (rough)
+        caliperMaterial.needsUpdate = true;
+      }
+    });
   }
 
 
@@ -203,4 +245,8 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
       emissive: originalMaterial.emissive || new THREE.Color(0xC0C0C0),
     });
   }
+
+  protected readonly DoubleSide = DoubleSide;
+  protected readonly Math = Math;
+  protected readonly THREE = THREE;
 }

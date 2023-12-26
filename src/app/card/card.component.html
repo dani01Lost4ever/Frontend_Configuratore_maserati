@@ -1,12 +1,22 @@
 <div class="w-screen p-8 bg-black-100">
-  <div class="bg-white flex p-10 justify-center rounded-2xl shadow-xl height">
-    <div class="w-1/2 border-r-2 pr-8">
+  <div class=" flex p-10 justify-center rounded-2xl shadow-xl height bgwaves">
+    <div class="w-1/2 pr-8">
       <img src="assets/maserati/QP_logo-black.svg" alt="Maserati Quattroporte" class="w-1/2"/>
       <p class="text-sm text-gray-400">Prezzo Base: {{prezzo | currency}}</p>
       <p class="my-4 text-gray-500 text-sm">Linee eleganti e proporzioni ben bilanciate definiscono la compostezza classica di Quattroporte. Il suo aspetto evocativo incontra un’aerodinamica rivoluzionaria per offrire una potente sensazione di esclusività.Anche l’abitacolo riserva una qualità di altissimo livello. Quattroporte rifiuta gli eccessi, ma questo non le impedisce di offrire materiali esclusivi e funzionalità superiori.</p>
-      <h3 class="text-sm text-gray-400 tracking-widest">COLOR OPTIONS</h3>
-      <div class="flex mt-4 gap-4">
-        <button class="h-10 w-10 rounded-full shadow-lg cursor-pointer hover:opacity-50 border-2 border-white" [ngClass]="{ 'selected': selectedColor === color }" [style.background-color]="color" *ngFor="let color of colors" (click)="selectedColor = color"></button>
+      <div class="flex flex-row">
+        <div class="w-1/3">
+          <h3 class="text-sm text-gray-400 tracking-widest">COLOR OPTIONS</h3>
+          <div class="flex mt-4 gap-4">
+            <button class="h-10 w-10 rounded-full shadow-lg cursor-pointer hover:opacity-50 border-2 border-white" [ngClass]="{ 'selected': selectedColor === color }" [style.background-color]="color" *ngFor="let color of colors" (click)="selectedColor = color"></button>
+          </div>
+        </div>
+        <div class="w-2/3">
+          <h3 class="text-sm text-gray-400 tracking-widest">CALIPER COLORS</h3>
+          <div class="flex mt-4 gap-4">
+            <button class="h-10 w-10 rounded-full shadow-lg cursor-pointer hover:opacity-50 border-2 border-white" [ngClass]="{ 'selected': selectedBrakeCaliper === color }" [style.background-color]="color" *ngFor="let color of brakeKalipers" (click)="selectedBrakeCaliper = color"></button>
+          </div>
+        </div>
       </div>
       <br/>
       <h3 class="text-sm text-gray-400 tracking-widest">WHEEL OPTIONS</h3>
@@ -15,6 +25,6 @@
       </div>
       <!--      <button class=" mt-8 w-full shadow-2xl p-4 text-gray-100 bg-black rounded-md">Add to cart</button>-->
     </div>
-    <app-car-configurator class="w-1/2 h-[300px]" [color]="selectedColor" [rim]="selectedRim"></app-car-configurator>
+    <app-car-configurator class="w-1/2 h-[300px]" [color]="selectedColor" [rim]="selectedRim" [brakeKaliper]="selectedBrakeCaliper"></app-car-configurator>
   </div>
 </div>

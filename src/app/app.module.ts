@@ -12,13 +12,16 @@ import { CarConfiguratorComponent } from './car-configurator/car-configurator.co
 import { WheelPreviewComponent } from './wheel-preview/wheel-preview.component';
 import {HttpClientModule} from "@angular/common/http";
 import { CardComponent } from './card/card.component';
+import {NgtPlaneGeometryModule} from "@angular-three/core/geometries";
+import {NgtMeshStandardMaterialModule, NgtShadowMaterialModule} from "@angular-three/core/materials";
 
 @NgModule({
   declarations: [
     AppComponent,
     CarConfiguratorComponent,
     WheelPreviewComponent,
-    CardComponent
+    CardComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -29,7 +32,10 @@ import { CardComponent } from './card/card.component';
     NgtAmbientLightModule,
     NgtPointLightModule,
     NgtColorPipeModule,
-    HttpClientModule
+    HttpClientModule,
+    NgtPlaneGeometryModule,
+    NgtMeshStandardMaterialModule,
+    NgtShadowMaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]
