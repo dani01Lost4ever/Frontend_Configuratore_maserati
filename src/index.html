@@ -2,12 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>AngularProductConfig</title>
+  <title>MAserati Configurator</title>
   <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/Cabin.css">
+  <link rel="stylesheet" href="assets/css/Lora.css">
+  <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
 </head>
-<body>
+<body id="page-top" data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="77">
+<nav class="navbar navbar-expand-md fixed-top navbar-light" id="mainNav">
+  <div class="container"><a class="navbar-brand" href="#">MASERATI</a><button data-bs-toggle="collapse" class="navbar-toggler navbar-toggler-right" data-bs-target="#navbarResponsive" type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" value="Menu"><i class="fa fa-bars"></i></button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item nav-link"><a class="nav-link active" href="#about">About</a></li>
+        <li class="nav-item nav-link"><a class="nav-link" href="#download">configurator</a></li>
+        <li class="nav-item nav-link"><a class="nav-link" href="#contact">contact</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<header class="masthead" style="background-image:url('assets/img/intro-bg.jpg');">
+  <div class="intro-body">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <h1 class="brand-heading">Maserati Quattroporte</h1>
+          <p class="intro-text">Dal 1963, la berlina sportiva di lusso originale.<br>Una leggenda che non smette mai di ispirare</p><a class="btn btn-link btn-circle" role="button" href="#about"><i class="fa fa-angle-double-down animated"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="text-center content-section" id="about">
   <app-root></app-root>
+</section>
+<section class="text-center download-section content-section" id="download" style="background-image:url('assets/img/downloads-bg.jpg');">
+  <div class="container">
+    <div class="col-lg-8 mx-auto">
+      <h1>Download Grayscale</h1>
+      <p>You can download Grayscale for free on the preview page.</p><button class="btn btn-primary btn-lg btn-default" type="button">visit download page</button>
+    </div>
+  </div>
+</section><!-- Start: Map Clean -->
+<div class="map-clean"></div><!-- End: Map Clean -->
+<footer>
+  <div class="container text-center">
+    <p>Copyright ©&nbsp;Brand 2023</p>
+  </div>
+</footer>
+<script src="assets/js/grayscale.js"></script>
 </body>
 </html>
