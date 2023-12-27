@@ -9,6 +9,7 @@ import {DbConnectionsService} from "../service/db-connections.service";
 export class CardComponent implements OnInit{
   colors: string[] = [  ];
   brakeKalipers: string[] = [  ];
+  interior: string[]=["1.jpg","2.jpg","3.jpg","4.jpg","5.jpg","6.jpg"];
   prezzo: number = 0;
   constructor(private DbConnectionsService: DbConnectionsService) {  }
   paints$: Observable<string[]> = this.DbConnectionsService.list().pipe(
@@ -75,6 +76,8 @@ export class CardComponent implements OnInit{
   selectedColor = this.colors[0];
   selectedBrakeCaliper = this.brakeKalipers[0];
   selectedRim: string = '';
+  selectedInterior: string = this.interior[0];
+
 
   onRimSelected(rimImage: string) {
     this.selectedRim = rimImage;

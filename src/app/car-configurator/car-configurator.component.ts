@@ -4,6 +4,7 @@ import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewC
 import * as THREE from 'three';
 import {DoubleSide, Group, Mesh, MeshPhysicalMaterial, MeshStandardMaterial, Object3D, PerspectiveCamera} from 'three';
 import {NgtCanvas} from "@angular-three/core";
+import {preserveWhitespacesDefault} from "@angular/compiler";
 
 @Component({
   selector: 'app-car-configurator',
@@ -22,11 +23,16 @@ export class CarConfiguratorComponent implements OnInit, OnChanges  {
     this.#caliper = value;
     this.applyColorToCaliper(value);
   }
+  @Input() set interior(value: string) {
+    this.#interior = value;
+    this.applyColorToInterior(value);
+  }
   @Input() rim: string = '';
 
   private carModel: Object3D | null = null; // This will store the car model scene
   #color = '';
   #caliper='';
+  #interior='';
   cupMaterial: MeshPhysicalMaterial | undefined;
 
   constructor(private gltfLoaderService: NgtGLTFLoaderService) {}
@@ -44,6 +50,14 @@ export class CarConfiguratorComponent implements OnInit, OnChanges  {
     box.getSize(size);
     console.log('Size of the car:', size);
     //logging*************************************
+
+    const floorGeometry = new THREE.PlaneGeometry(20, 20);
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+    const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
+    floorMesh.rotation.x = -Math.PI / 2; // Rotate the floor to be parallel to the x-z plane
+    floorMesh.receiveShadow = true; // Enable the floor mesh to receive shadows
+    object.add(floorMesh); // Add the floor mesh to the car scene
+
     this.carModel = object; // Store the main car model
     console.log("model loaded: "+object);
     const traverseAndListMaterials = (obj: Object3D) => {
@@ -61,6 +75,7 @@ export class CarConfiguratorComponent implements OnInit, OnChanges  {
     });
     // this.originalWheelsFront = object.getObjectByName('GEO_rimLR_SUB0_EXT_rim3_0');
     // this.originalWheelsRear = object.getObjectByName('GEO_rimLF_SUB0_EXT_rim1_0');
+
     const carpaintMesh = object.getObjectByName('GEO_body_carpaint_2_EXT_carpaint_0');
     console.log("material: "+carpaintMesh);
     if (carpaintMesh && carpaintMesh instanceof Mesh) {
@@ -131,6 +146,43 @@ export class CarConfiguratorComponent implements OnInit, OnChanges  {
         caliperMaterial.needsUpdate = true;
       }
     });
+  }
+
+  applyColorToInterior(color: string) {
+    var hexcolor='';
+    switch (color) {
+      case "1.jpg":
+        hexcolor = '#c9ac90';
+break;
+      case "2.jpg":
+        hexcolor = '#21252d';
+break;
+      case "3.jpg":
+        hexcolor = '#264e8b';
+break;
+      case "4.jpg":
+        hexcolor = '#0b0c13';
+break;
+      case "5.jpg":
+        hexcolor = '#0989ac';
+break;
+      case "6.jpg":
+        hexcolor = '#93928d';
+break;
+      default:
+        hexcolor = '#000000';
+    }
+    const interiorMesh = this.carModel!.getObjectByName('GEO_interiors_SUB0_INT_leather_color_0');
+    if (interiorMesh instanceof Mesh) {
+      const interiorMaterial = interiorMesh.material as MeshPhysicalMaterial;
+      // Adjust the base color of the material
+      interiorMaterial.color.setHex(parseInt(hexcolor.substring(1), 16));
+      interiorMaterial.emissive.setHex(parseInt(hexcolor.substring(1), 16));
+      interiorMaterial.emissiveIntensity = 0.1;
+      interiorMaterial.metalness = 0;
+      interiorMaterial.roughness = 0.8;
+      interiorMaterial.needsUpdate = true;
+    }
   }
 
 
@@ -249,4 +301,5 @@ export class CarConfiguratorComponent implements OnInit, OnChanges  {
   protected readonly DoubleSide = DoubleSide;
   protected readonly Math = Math;
   protected readonly THREE = THREE;
+  protected readonly preserveWhitespacesDefault = preserveWhitespacesDefault;
 }
