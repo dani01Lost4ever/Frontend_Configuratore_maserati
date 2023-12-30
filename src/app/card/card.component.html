@@ -20,15 +20,15 @@
       </div>
       <br/>
       <div class="flex flex-row">
-        <div class="w-1/3">
+        <div class="w-1/2">
           <h3 class="text-sm text-gray-400 tracking-widest">WHEEL OPTIONS</h3>
           <div class="flex mt-4 gap-4">
             <app-wheel-preview (rimSelected)="onRimSelected($event)"></app-wheel-preview>
           </div>
         </div>
-        <div class="w-2/3 pl-10">
+        <div class="w-1/2">
           <h3 class="text-sm text-gray-400 tracking-widest">INTERIOR OPTIONS</h3>
-          <div class="flex mt-4 gap-4">
+          <div class="flex mt-4 gap-4 mr-5">
             <img src="assets/interni/{{color}}" alt="{{color}}" *ngFor="let color of interior" class="h-10 w-10 rounded-full shadow-lg cursor-pointer hover:opacity-50 border-2 border-white" [ngClass]="{ 'selected': selectedInterior === color }" (click)="selectedInterior = color">
 <!--            <button class="h-10 w-10 rounded-full shadow-lg cursor-pointer hover:opacity-50 border-2 border-white" [ngClass]="{ 'selected': selectedInterior === color }" [style.background-color]="color" *ngFor="let color of interior" (click)="selectedInterior = color"></button>-->
           </div>

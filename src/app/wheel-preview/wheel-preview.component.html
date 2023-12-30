@@ -1,5 +1,5 @@
 <div class="flex flex-wrap">
-  <div *ngFor="let rim of rims"  class="w-1/3">
+  <div *ngFor="let rim of rims"  class="w-1/4">
     <img src="assets/{{rim.FileImage}}" alt="{{rim.FileImage}}" class="pl-1 pr-1 size w-full cursor-pointer hover:opacity-50 border-2 border-white" [ngClass]="{ 'selected': selectedRim === rim.FileImage, 'click': 'zoom' }" (click)="selectRim(rim.FileImage)" />
   </div>
 </div>

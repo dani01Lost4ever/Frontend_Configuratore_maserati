@@ -45,6 +45,8 @@ export class CardComponent implements OnInit{
             return '#000000';
         }
       });
+      //this.colors.push('#f3d252');
+      this.colors.push('#02433f');
     });
 
     this.brakeKalipers$.subscribe(colors => {

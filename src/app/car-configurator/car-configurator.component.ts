@@ -1,22 +1,8 @@
 import { NgtSobaOrbitControls } from '@angular-three/soba/controls';
 import { NgtGLTFLoaderService } from '@angular-three/soba/loaders';
-import {
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
+import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import * as THREE from 'three';
-import {
-  DoubleSide,
-  Group,
-  Mesh,
-  MeshPhysicalMaterial,
-  MeshStandardMaterial,
-  Object3D,
-  PerspectiveCamera,
-} from 'three';
+import { DoubleSide, Group, Mesh, MeshPhysicalMaterial, MeshStandardMaterial, Object3D, PerspectiveCamera} from 'three';
 import { preserveWhitespacesDefault } from '@angular/compiler';
 
 @Component({
@@ -24,7 +10,7 @@ import { preserveWhitespacesDefault } from '@angular/compiler';
   templateUrl: './car-configurator.component.html',
   styleUrls: ['./car-configurator.component.scss'],
 })
-export class CarConfiguratorComponent implements OnInit, OnChanges {
+export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewInit {
   // private originalWheelsFront!: Object3D | undefined
   // private originalWheelsRear!: Object3D | undefined;
   @Input()
@@ -47,7 +33,8 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
   #caliper = '';
   #interior = '';
   cupMaterial: MeshPhysicalMaterial | undefined;
-
+  //smokeGeometry: THREE.BufferGeometry | undefined;
+  //smokePositions: Float32Array | undefined;
   constructor(private gltfLoaderService: NgtGLTFLoaderService) {}
 
   // alternateWheels$ = this.gltfLoaderService.load('assets/newRims.glb');
@@ -80,13 +67,16 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
       }
     );
     const floorGeometry = new THREE.PlaneGeometry(20, 20);
-    const floorMaterial = new THREE.MeshStandardMaterial({  side: DoubleSide, metalness: 0.4, roughness: 0.0, normalMap: texture , fog: true});
+    const floorMaterial = new THREE.MeshStandardMaterial({  side: DoubleSide, metalness: 0.6,metalnessMap: texture , roughness: 0.4, normalMap: texture , fog: true});
     const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
     //floorMaterial.map = texture;
     floorMesh.rotation.x = -Math.PI / 2; // Rotate the floor to be parallel to the x-z plane
     floorMesh.receiveShadow = true; // Enable the floor mesh to receive shadows
     object.add(floorMesh); // Add the floor mesh to the car scene
+
     this.carModel = object; // Store the main car model
+    this.createRoom();
+    //this.createSmokeEffect();
     console.log('model loaded: ' + object);
     const traverseAndListMaterials = (obj: Object3D) => {
       if (obj instanceof Mesh && obj.material) {
@@ -119,22 +109,33 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+
     // this.alternateWheels$.subscribe((gltf) => {
     //   this.alternateWheels = gltf.scene;
     // });
+  }
+  ngAfterViewInit() {
+    // this.animateSmoke();
   }
 
   controlsReady(controls: NgtSobaOrbitControls) {
     const orbitControls = controls.controls;
     orbitControls.enableZoom = true;
     orbitControls.autoRotate = true;
-    orbitControls.autoRotateSpeed = 2;
+    orbitControls.autoRotateSpeed = 1.5;
     orbitControls.maxZoom = 0.5;
     orbitControls.minZoom = 0.2;
+    orbitControls.maxDistance = 10;
+    orbitControls.minDistance = 1;
+    orbitControls.minPolarAngle = 0;
+    orbitControls.maxPolarAngle = Math.PI / 2;
     const camera = orbitControls.object as PerspectiveCamera;
+    camera.near = 0.1;
+    camera.far = 25;
     camera.fov = 100;
-    camera.zoom = 3.0;
-    camera.position.setY(2);
+    camera.zoom = 2.5;
+    camera.position.setY(1);
+    camera.updateProjectionMatrix();
   }
 
   applyColorToMaterial(color: string) {
@@ -249,6 +250,7 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
     if (rimFileName === 'cerchi_mercurio.png') rimPath = 'assets/3.glb';
     if (rimFileName === 'cerchi_plutone.png') rimPath = 'assets/1.glb';
     if (rimFileName === 'cerchi_urano.png') rimPath = 'assets/2.glb';
+    if (rimFileName === 'rimSpecial.png') rimPath = 'assets/5.glb';
     // const rimPath = `assets/${rimFileName.replace('.png', '.glb')}`;
     console.log('Tipo di cerchi: ' + rimFileName + ' ' + rimPath);
     const result = this.gltfLoaderService.load(rimPath).subscribe((gltf) => {
@@ -299,6 +301,10 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
       'Object_24',
       'Object_22',
       'Object_26',
+      'Object_4',
+      'Object_4',
+      'Object_4',
+      'Object_4',
     ];
 
     wheelNames.forEach((wheelName) => {
@@ -368,4 +374,149 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
   protected readonly Math = Math;
   protected readonly THREE = THREE;
   protected readonly preserveWhitespacesDefault = preserveWhitespacesDefault;
+
+  createRoom() {
+    const wallThickness = 0.5;
+    const roomSize = 20; // assuming the room is a 10x10 square
+
+    const textureLoader = new THREE.TextureLoader();
+    const texture= textureLoader.load(
+      'https://maseraticonfigurator.azurewebsites.net/wall.jpg',
+      (texture) => {
+        texture.encoding = THREE.sRGBEncoding ;
+        texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
+        texture.generateMipmaps = false; // Only use if necessary
+        texture.needsUpdate = true;
+        wallMaterial.emissiveMap = texture;
+        wallMaterial.map = texture;
+        wallMaterial.needsUpdate = true;
+        console.log("Wall Texture loaded");
+      }, undefined, (err) => {
+        console.error('An error occurred loading the floor texture.');
+        console.error(err);
+      }
+    );
+    // Material for the walls and ceiling, with basic color or texture
+    const wallMaterial = new THREE.MeshStandardMaterial({
+      side: THREE.DoubleSide,
+      normalMap: texture,
+      metalnessMap: texture,
+      metalness: 0.4,
+      roughness: 0.5,
+    });
+
+    // Wall geometry
+    const wallGeometry = new THREE.BoxGeometry(roomSize, roomSize, wallThickness);
+
+    // Create walls (front, back, left, right)
+    const wallPositions = [
+      new THREE.Vector3(0, roomSize / 2, roomSize / 2 + wallThickness / 2), // Front wall
+      new THREE.Vector3(0, roomSize / 2, -roomSize / 2 - wallThickness / 2), // Back wall
+      new THREE.Vector3(-roomSize / 2 - wallThickness / 2, roomSize / 2, 0), // Left wall
+      new THREE.Vector3(roomSize / 2 + wallThickness / 2, roomSize / 2, 0) // Right wall
+    ];
+
+    for (const position of wallPositions) {
+      const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
+      wallMesh.position.copy(position);
+      wallMesh.rotation.y = (position.x !== 0) ? Math.PI / 2 : 0; // Rotate side walls by 90 degrees
+      this.carModel!.add(wallMesh); // Adding walls to the scene
+    }
+
+    // Ceiling geometry and mesh (reuse wall geometry)
+    const ceilingMesh = new THREE.Mesh(wallGeometry, wallMaterial);
+    ceilingMesh.position.set(0, roomSize, 0); // Positioned at the top of the walls
+    ceilingMesh.rotation.x = Math.PI / 2; // Rotate the ceiling to be parallel to the floor
+    this.carModel!.add(ceilingMesh); // Adding ceiling to the scene
+  }
+
+  configureLights(light: THREE.PointLight) {
+    light.castShadow = true;
+    light.shadow.mapSize.width = 1024;
+    light.shadow.mapSize.height = 1024;
+    light.shadow.bias = -0.0001;
+    light.power = 20;
+    light.color.setHex(0xffffff);
+
+  }
+
+  // createSmokeEffect() {
+  //   const smokeTextureLoader = new THREE.TextureLoader();
+  //   // const smokeTexture = smokeTextureLoader.load('https://maseraticonfigurator.azurewebsites.net/smoke.png');
+  //   const smokeTexture= smokeTextureLoader.load(
+  //     'https://maseraticonfigurator.azurewebsites.net/smoke.png',
+  //     (smokeTexture) => {
+  //       smokeTexture.encoding = THREE.sRGBEncoding ;
+  //       smokeTexture.wrapS = smokeTexture.wrapT = THREE.MirroredRepeatWrapping;
+  //       smokeTexture.generateMipmaps = false; // Only use if necessary
+  //       smokeTexture.needsUpdate = true;
+  //       smokeMaterial.map = smokeTexture;
+  //       smokeMaterial.needsUpdate = true;
+  //       console.log("Smoke Texture loaded");
+  //     }, undefined, (err) => {
+  //       console.error('An error occurred loading the floor texture.');
+  //       console.error(err);
+  //     }
+  //   );
+  //
+  //   const smokeParticles = 150;
+  //   //const smokeGeometry = new THREE.BufferGeometry();
+  //   const smokeMaterial = new THREE.PointsMaterial({
+  //     size: 3,
+  //     transparent: true,
+  //     opacity: 0.5, // Adjust opacity as needed
+  //     map: smokeTexture,
+  //     blending: THREE.AdditiveBlending,
+  //     depthWrite: false,
+  //   });
+  //
+  //   const smokePositions: number[] = [];
+  //   for (let i = 0; i < smokeParticles; i++) {
+  //     const x = Math.random() * 20 - 10;
+  //     const y = Math.random() * 2 - 1;
+  //     const z = Math.random() * 20 - 10;
+  //
+  //     smokePositions.push(x, y, z);
+  //   }
+  //   this.smokeGeometry = new THREE.BufferGeometry();
+  //   this.smokeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(smokePositions, 3));
+  //   //this.smokeGeometry = smokeGeometry;
+  //   this.smokePositions = new Float32Array(smokePositions);
+  //   const smokePoints = new THREE.Points(this.smokeGeometry, smokeMaterial);
+  //  // smokePoints.sortParticles = true; // Only necessary if you have transparency issues
+  //
+  //   // Assuming you've created a group or mesh to add your effects to
+  //   if (this.carModel) {
+  //     console.log("Smoke added");
+  //     this.carModel.add(smokePoints);
+  //     this.animateSmoke();
+  //   }
+  // }
+  //
+  // animateSmoke() {
+  //   console.log("Starting animation smoke");
+  //   // Assuming you're calling requestAnimationFrame somewhere to keep updating the scene:
+  //   requestAnimationFrame(() => this.animateSmoke());
+  //   if( !this.smokeGeometry!.attributes['position'] || !this.smokePositions) return;
+  //   console.log("Updating smoke...");
+  //   // Modify the y position of each particle to make it rise
+  //   for (let i = 0; i < this.smokePositions.length; i += 3) {
+  //     this.smokePositions[i + 1] += 0.1; // Increment y position
+  //     // You can also randomize movement on the x and z axes to make it look more natural:
+  //     this.smokePositions[i] += (Math.random() - 0.5) * 0.1; // Randomize x position
+  //     this.smokePositions[i + 2] += (Math.random() - 0.5) * 0.1; // Randomize z position
+  //   }
+  //
+  //   // Notify Three.js that the positions have changed
+  //   // Notify Three.js that the positions have changed
+  //   this.smokeGeometry!.attributes['position'].needsUpdate = true;
+  //
+  //   // Optionally, reset particles that have risen too high
+  //   for (let i = 0; i < this.smokePositions.length; i += 3) {
+  //     if (this.smokePositions[i + 1] > 10) { // If y position greater than 10, reset the particle
+  //       this.smokePositions[i + 1] = -1; // Reset y position back to its start
+  //     }
+  //   }
+  // }
+
 }
