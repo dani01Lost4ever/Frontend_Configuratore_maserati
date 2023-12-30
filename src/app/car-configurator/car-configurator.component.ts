@@ -49,27 +49,34 @@ export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewIni
     box.getSize(size);
     console.log('Size of the car:', size);
     //logging*************************************
-    const textureLoader = new THREE.TextureLoader();
-    const texture= textureLoader.load(
-      'https://maseraticonfigurator.azurewebsites.net/floor4.jpg',
-      (texture) => {
-        texture.encoding = THREE.sRGBEncoding ;
-        texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
-        texture.generateMipmaps = false; // Only use if necessary
-        texture.needsUpdate = true;
-        floorMaterial.emissiveMap = texture;
-        floorMaterial.map = texture;
-        floorMaterial.needsUpdate = true;
-        console.log("Floor Texture loaded");
-      }, undefined, (err) => {
-        console.error('An error occurred loading the floor texture.');
-        console.error(err);
+    // Assuming loader has been created with GLTFLoader
+    // Load the .glb file
+    let floorMaterial = new THREE.MeshPhysicalMaterial();
+    this.gltfLoaderService.load('assets/floor.glb').subscribe((gltf: any) => {
+      let extractedMaterial;
+      gltf.scene.traverse((child: any) => {
+        if (child.isMesh && child.material.name === 'concrete_floor_worn_001') {
+          extractedMaterial = child.material;
+        }
+      });
+      // Check if we found the material
+      if (extractedMaterial) {
+        // Apply the extracted material to whatever mesh you like, e.g., your floor mesh
+        floorMaterial = extractedMaterial;
+        floorMaterial.needsUpdate = true; // In case you need to update uniforms or other properties.
+        floorMesh.material = floorMaterial; // Applying the material to your floor mesh
+      } else {
+        console.error('Concrete floor material not found in the GLB file.');
       }
-    );
-    const floorGeometry = new THREE.PlaneGeometry(20, 20);
-    const floorMaterial = new THREE.MeshStandardMaterial({  side: DoubleSide, metalness: 0.6,metalnessMap: texture , roughness: 0.4, normalMap: texture , fog: true});
+    }, (error: any) => {
+      console.error('An error occurred while loading the GLB file.', error);
+    });
+
+    const floorGeometry = new THREE.BoxGeometry(20, 20, 1);
+    //let floorMaterial = new THREE.MeshStandardMaterial({  side: DoubleSide, metalness: 0.6,metalnessMap: texture , roughness: 0.4, normalMap: texture , fog: true});
     const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
     //floorMaterial.map = texture;
+    floorMesh.translateY(-0.5);
     floorMesh.rotation.x = -Math.PI / 2; // Rotate the floor to be parallel to the x-z plane
     floorMesh.receiveShadow = true; // Enable the floor mesh to receive shadows
     object.add(floorMesh); // Add the floor mesh to the car scene
@@ -285,26 +292,9 @@ export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewIni
     }
 
     const wheelNames = [
-      'GEO_rimLR_SUB0_EXT_rim3_0',
-      'GEO_rimLF_SUB0_EXT_rim1_0',
-      'GEO_rimRF_SUB0_EXT_rim5_0',
-      'GEO_rimRR_SUB0_EXT_rim7_0',
-      'Object_24',
-      'Object_22',
-      'Object_26',
-      'Object_24',
-      'Object_22',
-      'Object_26',
-      'Object_24',
-      'Object_22',
-      'Object_26',
-      'Object_24',
-      'Object_22',
-      'Object_26',
-      'Object_4',
-      'Object_4',
-      'Object_4',
-      'Object_4',
+      'GEO_rimLR_SUB0_EXT_rim3_0','GEO_rimLF_SUB0_EXT_rim1_0','GEO_rimRF_SUB0_EXT_rim5_0','GEO_rimRR_SUB0_EXT_rim7_0',
+      'Object_24','Object_22','Object_26','Object_24','Object_22','Object_26','Object_24','Object_22','Object_26',
+      'Object_24','Object_22','Object_26','Object_4','Object_4','Object_4','Object_4',
     ];
 
     wheelNames.forEach((wheelName) => {
@@ -377,57 +367,58 @@ export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewIni
 
   createRoom() {
     const wallThickness = 0.5;
-    const roomSize = 20; // assuming the room is a 10x10 square
+    const roomSize = 20; // Assuming the room is a 20x20 square
 
-    const textureLoader = new THREE.TextureLoader();
-    const texture= textureLoader.load(
-      'https://maseraticonfigurator.azurewebsites.net/wall.jpg',
-      (texture) => {
-        texture.encoding = THREE.sRGBEncoding ;
-        texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
-        texture.generateMipmaps = false; // Only use if necessary
-        texture.needsUpdate = true;
-        wallMaterial.emissiveMap = texture;
-        wallMaterial.map = texture;
-        wallMaterial.needsUpdate = true;
-        console.log("Wall Texture loaded");
-      }, undefined, (err) => {
-        console.error('An error occurred loading the floor texture.');
-        console.error(err);
+    // Function to create and add walls and ceiling
+    const addWallsAndCeiling = (material: never) => {
+      const wallGeometry = new THREE.BoxGeometry(roomSize, roomSize, wallThickness);
+      const wallPositions = [
+        new THREE.Vector3(0, roomSize / 2, roomSize / 2 + wallThickness / 2), // Front wall
+        new THREE.Vector3(0, roomSize / 2, -roomSize / 2 - wallThickness / 2), // Back wall
+        new THREE.Vector3(-roomSize / 2 - wallThickness / 2, roomSize / 2, 0), // Left wall
+        new THREE.Vector3(roomSize / 2 + wallThickness / 2, roomSize / 2, 0) // Right wall
+      ];
+
+      wallPositions.forEach(position => {
+        const wallMesh = new THREE.Mesh(wallGeometry, material);
+        wallMesh.receiveShadow=true;
+        wallMesh.position.copy(position);
+        wallMesh.rotation.y = (position.x !== 0) ? Math.PI / 2 : 0;
+        this.carModel!.add(wallMesh);
+      });
+
+      const ceilingMesh = new THREE.Mesh(wallGeometry, material);
+      ceilingMesh.position.set(0, roomSize, 0);
+      ceilingMesh.rotation.x = Math.PI / 2;
+      this.carModel!.add(ceilingMesh);
+    };
+
+    // Load the custom wall material
+    this.gltfLoaderService.load('assets/wall.glb').subscribe((gltf) => {
+      let extractedMaterial;
+      gltf.scene.traverse((child: any) => {
+        if (child.isMesh && child.material.name === 'dark_brick_wall') {
+          extractedMaterial = child.material;
+          if(extractedMaterial.map){
+            const scaleFactor = 4; // Adjust accordingly
+            const texture = extractedMaterial.map;
+            texture.encoding = THREE.sRGBEncoding;
+            texture.repeat.set(scaleFactor, scaleFactor);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.needsUpdate = true; // Might be needed to update texture settings
+          }
+        }
+      });
+      if (extractedMaterial) {
+        // Material is available, now create and add walls and ceiling
+        addWallsAndCeiling(extractedMaterial);
+      } else {
+        console.error('Wall material not found in the GLB file.');
       }
-    );
-    // Material for the walls and ceiling, with basic color or texture
-    const wallMaterial = new THREE.MeshStandardMaterial({
-      side: THREE.DoubleSide,
-      normalMap: texture,
-      metalnessMap: texture,
-      metalness: 0.4,
-      roughness: 0.5,
+    }, (error) => {
+      console.error('An error occurred while loading the GLB file.', error);
     });
-
-    // Wall geometry
-    const wallGeometry = new THREE.BoxGeometry(roomSize, roomSize, wallThickness);
-
-    // Create walls (front, back, left, right)
-    const wallPositions = [
-      new THREE.Vector3(0, roomSize / 2, roomSize / 2 + wallThickness / 2), // Front wall
-      new THREE.Vector3(0, roomSize / 2, -roomSize / 2 - wallThickness / 2), // Back wall
-      new THREE.Vector3(-roomSize / 2 - wallThickness / 2, roomSize / 2, 0), // Left wall
-      new THREE.Vector3(roomSize / 2 + wallThickness / 2, roomSize / 2, 0) // Right wall
-    ];
-
-    for (const position of wallPositions) {
-      const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
-      wallMesh.position.copy(position);
-      wallMesh.rotation.y = (position.x !== 0) ? Math.PI / 2 : 0; // Rotate side walls by 90 degrees
-      this.carModel!.add(wallMesh); // Adding walls to the scene
-    }
-
-    // Ceiling geometry and mesh (reuse wall geometry)
-    const ceilingMesh = new THREE.Mesh(wallGeometry, wallMaterial);
-    ceilingMesh.position.set(0, roomSize, 0); // Positioned at the top of the walls
-    ceilingMesh.rotation.x = Math.PI / 2; // Rotate the ceiling to be parallel to the floor
-    this.carModel!.add(ceilingMesh); // Adding ceiling to the scene
   }
 
   configureLights(light: THREE.PointLight) {
