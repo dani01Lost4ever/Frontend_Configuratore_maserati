@@ -64,11 +64,11 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
     //logging*************************************
     const textureLoader = new THREE.TextureLoader();
     const texture= textureLoader.load(
-      'https://maseraticonfigurator.azurewebsites.net/floor.jpg',
+      'https://maseraticonfigurator.azurewebsites.net/floor4.jpg',
       (texture) => {
-        texture.encoding = THREE.sRGBEncoding;
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        texture.generateMipmaps = true; // Only use if necessary
+        texture.encoding = THREE.sRGBEncoding ;
+        texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
+        texture.generateMipmaps = false; // Only use if necessary
         texture.needsUpdate = true;
         floorMaterial.emissiveMap = texture;
         floorMaterial.map = texture;
@@ -80,13 +80,12 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
       }
     );
     const floorGeometry = new THREE.PlaneGeometry(20, 20);
-    const floorMaterial = new THREE.MeshStandardMaterial({  side: DoubleSide, metalness: 0.2, roughness: 0.1, normalMap: texture , fog: true});
+    const floorMaterial = new THREE.MeshStandardMaterial({  side: DoubleSide, metalness: 0.4, roughness: 0.0, normalMap: texture , fog: true});
     const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
     //floorMaterial.map = texture;
     floorMesh.rotation.x = -Math.PI / 2; // Rotate the floor to be parallel to the x-z plane
     floorMesh.receiveShadow = true; // Enable the floor mesh to receive shadows
     object.add(floorMesh); // Add the floor mesh to the car scene
-
     this.carModel = object; // Store the main car model
     console.log('model loaded: ' + object);
     const traverseAndListMaterials = (obj: Object3D) => {
@@ -130,6 +129,8 @@ export class CarConfiguratorComponent implements OnInit, OnChanges {
     orbitControls.enableZoom = true;
     orbitControls.autoRotate = true;
     orbitControls.autoRotateSpeed = 2;
+    orbitControls.maxZoom = 0.5;
+    orbitControls.minZoom = 0.2;
     const camera = orbitControls.object as PerspectiveCamera;
     camera.fov = 100;
     camera.zoom = 3.0;
