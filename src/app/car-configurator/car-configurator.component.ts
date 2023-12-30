@@ -258,6 +258,8 @@ export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewIni
     if (rimFileName === 'cerchi_plutone.png') rimPath = 'assets/1.glb';
     if (rimFileName === 'cerchi_urano.png') rimPath = 'assets/2.glb';
     if (rimFileName === 'rimSpecial.png') rimPath = 'assets/5.glb';
+    if (rimFileName === 'rimSpecial2.png') rimPath = 'assets/6.glb';
+    if (rimFileName === 'rimSpecial3.png') rimPath = 'assets/4.glb';
     // const rimPath = `assets/${rimFileName.replace('.png', '.glb')}`;
     console.log('Tipo di cerchi: ' + rimFileName + ' ' + rimPath);
     const result = this.gltfLoaderService.load(rimPath).subscribe((gltf) => {
@@ -294,7 +296,8 @@ export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewIni
     const wheelNames = [
       'GEO_rimLR_SUB0_EXT_rim3_0','GEO_rimLF_SUB0_EXT_rim1_0','GEO_rimRF_SUB0_EXT_rim5_0','GEO_rimRR_SUB0_EXT_rim7_0',
       'Object_24','Object_22','Object_26','Object_24','Object_22','Object_26','Object_24','Object_22','Object_26',
-      'Object_24','Object_22','Object_26','Object_4','Object_4','Object_4','Object_4',
+      'Object_24','Object_22','Object_26','Object_4','Object_4','Object_4','Object_4','Object_35','Object_35','Object_35',
+      'Object_35','Object_7','Object_7','Object_7','Object_7',
     ];
 
     wheelNames.forEach((wheelName) => {
