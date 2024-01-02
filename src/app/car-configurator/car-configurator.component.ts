@@ -11,8 +11,6 @@ import { preserveWhitespacesDefault } from '@angular/compiler';
   styleUrls: ['./car-configurator.component.scss'],
 })
 export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewInit {
-  // private originalWheelsFront!: Object3D | undefined
-  // private originalWheelsRear!: Object3D | undefined;
   @Input()
   set color(value: string) {
     this.#color = value;
@@ -28,17 +26,13 @@ export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewIni
   }
   @Input() rim: string = '';
 
-  private carModel: Object3D | null = null; // This will store the car model scene
+  private carModel: Object3D | null = null;
   #color = '';
   #caliper = '';
   #interior = '';
   cupMaterial: MeshPhysicalMaterial | undefined;
-  //smokeGeometry: THREE.BufferGeometry | undefined;
-  //smokePositions: Float32Array | undefined;
   constructor(private gltfLoaderService: NgtGLTFLoaderService) {}
 
-  // alternateWheels$ = this.gltfLoaderService.load('assets/newRims.glb');
-  // private alternateWheels: Object3D | undefined;
   car$ = this.gltfLoaderService.load('assets/maserati_quattroporte.glb');
   carLoaded(object: Object3D) {
     //logging*************************************
@@ -49,41 +43,24 @@ export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewIni
     box.getSize(size);
     console.log('Size of the car:', size);
     //logging*************************************
-    // Assuming loader has been created with GLTFLoader
-    // Load the .glb file
-    let floorMaterial = new THREE.MeshPhysicalMaterial();
-    this.gltfLoaderService.load('assets/floor.glb').subscribe((gltf: any) => {
-      let extractedMaterial;
+
+    let warehouse = this.gltfLoaderService.load('assets/warehouse.glb').subscribe((gltf) => {
       gltf.scene.traverse((child: any) => {
-        if (child.isMesh && child.material.name === 'concrete_floor_worn_001') {
-          extractedMaterial = child.material;
+        if (child.isMesh) {
+          console.log("Loading warehouse");
+          child.castShadow = true;
+          child.receiveShadow = true;
         }
+        console.log("Warehouse - Not a mesh");
       });
-      // Check if we found the material
-      if (extractedMaterial) {
-        // Apply the extracted material to whatever mesh you like, e.g., your floor mesh
-        floorMaterial = extractedMaterial;
-        floorMaterial.needsUpdate = true; // In case you need to update uniforms or other properties.
-        floorMesh.material = floorMaterial; // Applying the material to your floor mesh
-      } else {
-        console.error('Concrete floor material not found in the GLB file.');
-      }
-    }, (error: any) => {
+      console.log("Adding warehouse");
+      gltf.scene.rotateY(Math.PI / 2);
+      gltf.scene.scale.set(0.9,0.9,0.9);
+      object.add(gltf.scene);
+    }, (error) => {
       console.error('An error occurred while loading the GLB file.', error);
-    });
-
-    const floorGeometry = new THREE.BoxGeometry(20, 20, 1);
-    //let floorMaterial = new THREE.MeshStandardMaterial({  side: DoubleSide, metalness: 0.6,metalnessMap: texture , roughness: 0.4, normalMap: texture , fog: true});
-    const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
-    //floorMaterial.map = texture;
-    floorMesh.translateY(-0.5);
-    floorMesh.rotation.x = -Math.PI / 2; // Rotate the floor to be parallel to the x-z plane
-    floorMesh.receiveShadow = true; // Enable the floor mesh to receive shadows
-    object.add(floorMesh); // Add the floor mesh to the car scene
-
-    this.carModel = object; // Store the main car model
-    this.createRoom();
-    //this.createSmokeEffect();
+    } );
+    this.carModel = object;
     console.log('model loaded: ' + object);
     const traverseAndListMaterials = (obj: Object3D) => {
       if (obj instanceof Mesh && obj.material) {
@@ -116,13 +93,8 @@ export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   ngOnInit() {
-
-    // this.alternateWheels$.subscribe((gltf) => {
-    //   this.alternateWheels = gltf.scene;
-    // });
   }
   ngAfterViewInit() {
-    // this.animateSmoke();
   }
 
   controlsReady(controls: NgtSobaOrbitControls) {
@@ -138,7 +110,7 @@ export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewIni
     orbitControls.maxPolarAngle = Math.PI / 2;
     const camera = orbitControls.object as PerspectiveCamera;
     camera.near = 0.1;
-    camera.far = 25;
+    camera.far = 100;
     camera.fov = 100;
     camera.zoom = 2.5;
     camera.position.setY(1);
@@ -433,84 +405,4 @@ export class CarConfiguratorComponent implements OnInit, OnChanges, AfterViewIni
     light.color.setHex(0xffffff);
 
   }
-
-  // createSmokeEffect() {
-  //   const smokeTextureLoader = new THREE.TextureLoader();
-  //   // const smokeTexture = smokeTextureLoader.load('https://maseraticonfigurator.azurewebsites.net/smoke.png');
-  //   const smokeTexture= smokeTextureLoader.load(
-  //     'https://maseraticonfigurator.azurewebsites.net/smoke.png',
-  //     (smokeTexture) => {
-  //       smokeTexture.encoding = THREE.sRGBEncoding ;
-  //       smokeTexture.wrapS = smokeTexture.wrapT = THREE.MirroredRepeatWrapping;
-  //       smokeTexture.generateMipmaps = false; // Only use if necessary
-  //       smokeTexture.needsUpdate = true;
-  //       smokeMaterial.map = smokeTexture;
-  //       smokeMaterial.needsUpdate = true;
-  //       console.log("Smoke Texture loaded");
-  //     }, undefined, (err) => {
-  //       console.error('An error occurred loading the floor texture.');
-  //       console.error(err);
-  //     }
-  //   );
-  //
-  //   const smokeParticles = 150;
-  //   //const smokeGeometry = new THREE.BufferGeometry();
-  //   const smokeMaterial = new THREE.PointsMaterial({
-  //     size: 3,
-  //     transparent: true,
-  //     opacity: 0.5, // Adjust opacity as needed
-  //     map: smokeTexture,
-  //     blending: THREE.AdditiveBlending,
-  //     depthWrite: false,
-  //   });
-  //
-  //   const smokePositions: number[] = [];
-  //   for (let i = 0; i < smokeParticles; i++) {
-  //     const x = Math.random() * 20 - 10;
-  //     const y = Math.random() * 2 - 1;
-  //     const z = Math.random() * 20 - 10;
-  //
-  //     smokePositions.push(x, y, z);
-  //   }
-  //   this.smokeGeometry = new THREE.BufferGeometry();
-  //   this.smokeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(smokePositions, 3));
-  //   //this.smokeGeometry = smokeGeometry;
-  //   this.smokePositions = new Float32Array(smokePositions);
-  //   const smokePoints = new THREE.Points(this.smokeGeometry, smokeMaterial);
-  //  // smokePoints.sortParticles = true; // Only necessary if you have transparency issues
-  //
-  //   // Assuming you've created a group or mesh to add your effects to
-  //   if (this.carModel) {
-  //     console.log("Smoke added");
-  //     this.carModel.add(smokePoints);
-  //     this.animateSmoke();
-  //   }
-  // }
-  //
-  // animateSmoke() {
-  //   console.log("Starting animation smoke");
-  //   // Assuming you're calling requestAnimationFrame somewhere to keep updating the scene:
-  //   requestAnimationFrame(() => this.animateSmoke());
-  //   if( !this.smokeGeometry!.attributes['position'] || !this.smokePositions) return;
-  //   console.log("Updating smoke...");
-  //   // Modify the y position of each particle to make it rise
-  //   for (let i = 0; i < this.smokePositions.length; i += 3) {
-  //     this.smokePositions[i + 1] += 0.1; // Increment y position
-  //     // You can also randomize movement on the x and z axes to make it look more natural:
-  //     this.smokePositions[i] += (Math.random() - 0.5) * 0.1; // Randomize x position
-  //     this.smokePositions[i + 2] += (Math.random() - 0.5) * 0.1; // Randomize z position
-  //   }
-  //
-  //   // Notify Three.js that the positions have changed
-  //   // Notify Three.js that the positions have changed
-  //   this.smokeGeometry!.attributes['position'].needsUpdate = true;
-  //
-  //   // Optionally, reset particles that have risen too high
-  //   for (let i = 0; i < this.smokePositions.length; i += 3) {
-  //     if (this.smokePositions[i + 1] > 10) { // If y position greater than 10, reset the particle
-  //       this.smokePositions[i + 1] = -1; // Reset y position back to its start
-  //     }
-  //   }
-  // }
-
 }
